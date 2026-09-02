@@ -1,5 +1,6 @@
 """Application configuration and shared settings."""
 
+import os
 from functools import lru_cache
 from typing import List
 
@@ -9,19 +10,23 @@ from pydantic import BaseSettings, Field
 class Settings(BaseSettings):
     """Runtime configuration loaded from environment variables."""
 
-    secret_key: str = Field(
-        "dev-secret-key",
-        description="Secret key for signing tokens. Override in production via APP_SECRET_KEY.",
-        env="APP_SECRET_KEY",
-    )
+    environment: str = Field(default="development", env="APP_ENV")
+    secret_key: str = Field("", description="A strong APP_SECRET_KEY is required in production.", env="APP_SECRET_KEY")
     access_token_expiry_minutes: int = Field(
         60, description="Minutes until an issued access token expires."
     )
     allow_origins: List[str] = Field(
-        default_factory=lambda: ["*"],
+        default_factory=list,
         description="Origins allowed by CORS middleware.",
         env="APP_ALLOW_ORIGINS",
     )
+
+    def validate_runtime(self) -> None:
+        if self.environment.lower() == "production":
+            if len(self.secret_key) < 32:
+                raise RuntimeError("APP_SECRET_KEY must be at least 32 characters in production")
+            if not self.allow_origins or "*" in self.allow_origins:
+                raise RuntimeError("APP_ALLOW_ORIGINS must contain explicit origins in production")
 
     class Config:
         env_file = ".env"
