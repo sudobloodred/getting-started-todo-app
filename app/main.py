@@ -15,10 +15,12 @@ app = FastAPI(title="GhostLock Backend", version="1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allow_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
+
+settings.validate_runtime()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
