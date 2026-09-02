@@ -20,7 +20,7 @@ def run_phone_transforms(entity, owner: str) -> dict:
     phone = entity.name.strip().replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
 
     r = requests.get(
-        "http://apilayer.net/api/validate",
+        "https://apilayer.net/api/validate",
         params={"access_key": api_key, "number": phone},
         timeout=20,
     )

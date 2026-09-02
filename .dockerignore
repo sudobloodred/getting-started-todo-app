@@ -6,3 +6,9 @@ __pycache__
 .gitignore
 Dockerfile
 node_modules
+
+.env
+.env.*
+*.db
+*.sqlite
+*.sqlite3
